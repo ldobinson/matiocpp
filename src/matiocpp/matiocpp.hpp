@@ -75,8 +75,8 @@ namespace matiocpp {
 				void* x = const_cast<void*>(reinterpret_cast<const void*>(v.memptr()));
 
 				std::size_t dims[2];
-				dims[0] = 1;
-				dims[1] = v.n_elem;
+				dims[0] = v.n_elem; // SA: fix for a column vector 1;
+				dims[1] = 1; // v.n_elem;
 
 				_matvar = Mat_VarCreate(NULL, MAT_C_DOUBLE, MAT_T_DOUBLE, 2, dims, x, 0);
 

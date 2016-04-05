@@ -30,15 +30,15 @@ int main(int argc, char **argv) {
 
 	// Create vector sequence
 	vec vv = zeros<vec>(10);
-	for(std::size_t i = 0; i < 10; ++i) vv(i) = i;
+	for(size_t i = 0; i < 10; ++i) vv(i) = i;
 
 	// Create random matrix
 	mat vvv = randu<mat>(5,5);
 	vvv.print("VVV=");
-	std::string v("hello");
+	string v("hello");
 
 	// Create cell array 10x1
-	std::vector<std::size_t> dims(2);
+	vector<size_t> dims(2);
 	dims[0] = 10;
 	dims[1] = 1;
 
@@ -54,26 +54,26 @@ int main(int argc, char **argv) {
 	// Create struct array (1x1)
 	dims[0] = 1;
 	dims[1] = 1;
-	std::vector<std::string> fields = {"test","asd"};
+	vector<string> fields = {"test","asd"};
 	Struct ss(dims, fields);
 	ss.set("test",0,vv); // Set first test field to vector sequence
 	ss.set("asd",0,vc); // Set first asd field to first cell
 
 	// Create second struct array (1x)
 	Struct sss(dims, fields);
-	sss.set("test",0,v); // Set test = stirng
+	sss.set("test",0,v); // Set test = string
 	sss.set("asd",0,vv); // Set asd = vector sequence
 	vc2.set(1,sss); // Set cell2 1 = struct 2
 
 	// Create writer
 	Writer mw("test.mat");
 	// Write each element
-	std::cout << "res:" << mw.write("vec",vv) << std::endl;
-	std::cout << "res:" << mw.write("mat",vvv) << std::endl;
-	std::cout << "res:" << mw.write("string",v) << std::endl;
-	std::cout << "res:" << mw.write("cell1",vc) << std::endl;
-	std::cout << "res:" << mw.write("str",ss) << std::endl;
-	std::cout << "res:" << mw.write("cell2",vc2) << std::endl;
+	cout << "res:" << mw.write("vec",vv) << endl;
+	cout << "res:" << mw.write("mat",vvv) << endl;
+	cout << "res:" << mw.write("string",v) << endl;
+	cout << "res:" << mw.write("cell1",vc) << endl;
+	cout << "res:" << mw.write("str",ss) << endl;
+	cout << "res:" << mw.write("cell2",vc2) << endl;
 
 	// Create reader
 	Reader mv("test.mat");
@@ -89,8 +89,8 @@ int main(int argc, char **argv) {
 	xx2.print("XX2=");
 	xx3.print("XX2=");
 	xxx.print("XXX=");
-	std::string str = mv.read("string");
-	std::cout << str << std::endl;
+	string str = mv.read("string");
+	cout << str << endl;
 
 	mat xxxd = mv.read("vec");
 
