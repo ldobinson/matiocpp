@@ -1,23 +1,23 @@
-/**************************************************************************
- * Copyright (c) 2014 <Lars Johannesen> All rights reserved.              *
- *                                                                        *
- * This file is part of MATIOCPP                                          *
- *                                                                        *
- * MATIOCPP is free software: you can redistribute it and/or modify       *
- * it under the terms of the GNU General Public License as published by   *
- * the Free Software Foundation, either version 3 of the License, or      *
- * (at your option) any later version.                                    *
- *                                                                        *
- * MATIOCPP is distributed in the hope that it will be useful,            *
- * but WITHOUT ANY WARRANTY; without even the implied warranty of         *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
- * GNU General Public License for more details.                           *
- *                                                                        *
- * You should have received a copy of the GNU General Public License      *
- * along with MATIOCPP.  If not, see <http://www.gnu.org/licenses/>.      *
- *                                                                        *
- * compile with: g++ example.cpp -o example -lmatio -std=c++11            *
- **************************************************************************/
+/***************************************************************************
+ * Copyright (c) 2014 <Lars Johannesen> All rights reserved.               *
+ *                                                                         *
+ * This file is part of MATIOCPP                                           *
+ *                                                                         *
+ * MATIOCPP is free software: you can redistribute it and/or modify        *
+ * it under the terms of the GNU General Public License as published by    *
+ * the Free Software Foundation, either version 3 of the License, or       *
+ * (at your option) any later version.                                     *
+ *                                                                         *
+ * MATIOCPP is distributed in the hope that it will be useful,             *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License       *
+ * along with MATIOCPP.  If not, see <http://www.gnu.org/licenses/>.       *
+ *                                                                         *
+ * compile with: g++ example.cpp -o example -larmadillo -lmatio -std=c++11 *
+ ***************************************************************************/
 #include <armadillo>
 #include <cstdlib>
 #include <cstdio>
@@ -85,7 +85,7 @@ int main(int argc, char **argv) {
 	vec xx2 = cc.get(1);
 	vec xx3 = ss2.get("test",0);
 
-	xx.print("XX=");		
+	xx.print("XX=");
 	xx2.print("XX2=");
 	xx3.print("XX2=");
 	xxx.print("XXX=");

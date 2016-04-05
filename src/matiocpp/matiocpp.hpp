@@ -1,20 +1,20 @@
 /**************************************************************************
  * Copyright (c) 2014 <Lars Johannesen> All rights reserved.              *
  *                                                                        *
- * This file is part of MATIOCPP                                            *
+ * This file is part of MATIOCPP                                          *
  *                                                                        *
- * MATIOCPP is free software: you can redistribute it and/or modify         *
+ * MATIOCPP is free software: you can redistribute it and/or modify       *
  * it under the terms of the GNU General Public License as published by   *
  * the Free Software Foundation, either version 3 of the License, or      *
  * (at your option) any later version.                                    *
  *                                                                        *
- * MATIOCPP is distributed in the hope that it will be useful,              *
+ * MATIOCPP is distributed in the hope that it will be useful,            *
  * but WITHOUT ANY WARRANTY; without even the implied warranty of         *
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
  * GNU General Public License for more details.                           *
  *                                                                        *
  * You should have received a copy of the GNU General Public License      *
- * along with MATIOCPP.  If not, see <http://www.gnu.org/licenses/>.        *
+ * along with MATIOCPP.  If not, see <http://www.gnu.org/licenses/>.      *
  **************************************************************************/
 #ifndef MATIOCPP_LJ_07_15_2014
 #define MATIOCPP_LJ_07_15_2014 1
@@ -72,12 +72,12 @@ namespace matiocpp {
 			 */
 			MatVar(const vec &v) {
 				// NOTE: Potentially dangerous, but dealing with C-api that expects non-const pointers, despite using them readonly
-				void* x = const_cast<void*>(reinterpret_cast<const void*>(v.memptr()));	
+				void* x = const_cast<void*>(reinterpret_cast<const void*>(v.memptr()));
 
 				std::size_t dims[2];
 				dims[0] = 1;
 				dims[1] = v.n_elem;
-		
+
 				_matvar = Mat_VarCreate(NULL, MAT_C_DOUBLE, MAT_T_DOUBLE, 2, dims, x, 0);
 
 				if(!_matvar) {
@@ -92,12 +92,12 @@ namespace matiocpp {
 			 */
 			MatVar(const mat &v) {
 				// NOTE: Potentially dangerous, but dealing with C-api that expects non-const pointers, despite using them readonly
-				void* x = const_cast<void*>(reinterpret_cast<const void*>(v.memptr()));	
+				void* x = const_cast<void*>(reinterpret_cast<const void*>(v.memptr()));
 
 				std::size_t dims[2];
 				dims[0] = v.n_rows;
 				dims[1] = v.n_cols;
-		
+
 				_matvar = Mat_VarCreate(NULL, MAT_C_DOUBLE, MAT_T_DOUBLE, 2, dims, x, 0);
 
 				if(!_matvar) {
@@ -116,7 +116,8 @@ namespace matiocpp {
 
 				std::size_t dims[2];
 				dims[0] = 1;
-				dims[1] = str.size()+1;
+				// dims[1] = str.size()+1;
+                dims[1] = str.size(); // SA: fix for actual string size
 
 				// FIXME: MAT_T_UINT8 is used even though they have MAT_T_STRING, but that is not accepted / used in the current version of matio
 				_matvar = Mat_VarCreate(NULL, MAT_C_CHAR, MAT_T_UINT8, 2, dims, x, 0);
@@ -271,7 +272,7 @@ namespace matiocpp {
 			friend class Cell;
 			friend class Reader;
 			friend class Writer;
-	
+
 		private:
 			matvar_t *_matvar;
 	};
@@ -304,7 +305,7 @@ namespace matiocpp {
 				if(mm == NULL) {
 					throw matiocpp_exception("Failed to create cell");
 				}
-				
+
 				_mptr = MatVar(mm);
 
 				// FIXME: Internals to make sure we dont save partially filled cell array
@@ -352,7 +353,7 @@ namespace matiocpp {
 			}
 
 			/**
-			 * @brief Set element of matvar 
+			 * @brief Set element of matvar
 			 *
 			 * @param i index
 			 * @param v value
@@ -466,7 +467,7 @@ namespace matiocpp {
 			friend class Struct;
 		        friend class Reader;
 		        friend class Writer;
-	
+
 		private:
 			MatVar _mptr;
 			int _ndims;
@@ -585,7 +586,7 @@ namespace matiocpp {
 			 */
 			int nelems() const {
 				return _nelem;
-			}	
+			}
 
 			/**
 			 * @brief Return number of fields
@@ -738,9 +739,9 @@ namespace matiocpp {
 			 * @param mc matlab variable
 			 * @param compress if it should be compressed or not
 			 *
-			 * @return 
+			 * @return
 			 */
-			int write(const char *filename, const MatVar &mc, matio_compression compress = MAT_COMPRESSION_NONE) { 
+			int write(const char *filename, const MatVar &mc, matio_compression compress = MAT_COMPRESSION_NONE) {
 				// NOTE: Potentially dangerous, but dealing with C-api that expects non-const pointers, despite using them readonly
 				mc->name = const_cast<char*>(filename);
 
