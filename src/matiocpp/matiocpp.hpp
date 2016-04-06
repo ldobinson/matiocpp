@@ -891,7 +891,10 @@ namespace matiocpp {
                 _matfp = Mat_Open(name, MAT_ACC_RDWR);
 
 				if(!_matfp) {
-					throw matiocpp_exception("Could not open file");
+                    _matfp = Mat_CreateVer(name, hdr, fmt);
+                    if(!_matfp) {
+                        throw matiocpp_exception("Could not open file");
+                    }
 				}
 			}
 

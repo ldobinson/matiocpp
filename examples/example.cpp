@@ -82,7 +82,7 @@ int main(int argc, char **argv) {
 	cout << "status:" << matFileNameW.write("matrix",ex_matrix) << endl;
 	cout << "status:" << matFileNameW.write("string1",ex_string1) << endl;
 	cout << "status:" << matFileNameW.write("cell1",ex_cell1) << endl;
-	cout << "status:" << matFileNameW.write("struct",ex_struct) << endl;
+	cout << "status:" << matFileNameW.write("struct",ex_struct2) << endl;
 	cout << "status:" << matFileNameW.write("cell2",ex_cell2) << endl;
     cout << "status:" << matFileNameW.write("imatrix",ex_imatrix) << endl;
 
@@ -102,7 +102,7 @@ int main(int argc, char **argv) {
     ex_colvector2.print("ex_colvector2=");
 
     Struct ex_struct3 = matFileNameR.read("struct");
-	colvec ex_colvector3 = ex_struct3.get("test",0);
+	colvec ex_colvector3 = ex_struct3.get("asd",0);
 	ex_colvector3.print("ex_colvector3=");
 
 	string ex_string2 = matFileNameR.read("string1");
