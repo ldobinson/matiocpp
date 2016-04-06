@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (c) 2014 <Lars Johannesen> All rights reserved.               *
+ * Copyright (c) 2014 <Lars Johannesen> All rights statuserved.               *
  *                                                                         *
  * This file is part of MATIOCPP                                           *
  *                                                                         *
@@ -29,70 +29,87 @@ int main(int argc, char **argv) {
 	using namespace arma;
 
 	// Create vector sequence
-	vec vv = zeros<vec>(10);
-	for(size_t i = 0; i < 10; ++i) vv(i) = i;
+	colvec ex_colvector = zeros<colvec>(10);
+	for(size_t i = 0; i < 10; ++i) ex_colvector(i) = i;
+    ex_colvector.print("ex_colvector=");
 
 	// Create random matrix
-	mat vvv = randu<mat>(5,5);
-	vvv.print("VVV=");
-	string v("hello");
+	mat ex_matrix = randu<mat>(5,5);
+	ex_matrix.print("ex_matrix=");
+
+    // Create int matrix
+	imat ex_imatrix = randi<imat>(2, 3, distr_param(0,10));
+	ex_matrix.print("ex_imatrix=");
+
+    // string
+	string ex_string1("hello");
+    cout<<"ex_string1="<<ex_string1<<endl;
 
 	// Create cell array 10x1
 	vector<size_t> dims(2);
 	dims[0] = 10;
 	dims[1] = 1;
 
-	Cell vc(dims, true); // fill with empty matrices
-	vc.set(0,v); // Set first element = string
-	vc.set(1,vv); // Set second element = vector sequence
-	vc.set(2,vvv); // Set third element = matrix
+	Cell ex_cell1(dims, true); // fill with empty matrices
+	ex_cell1.set(0,ex_string1); // Set first element = string
+	ex_cell1.set(1,ex_colvector); // Set second element = vector sequence
+	ex_cell1.set(2,ex_matrix); // Set third element = matrix
 
-	Cell vc2(dims, true); // Second cell array
-	vc2.set(0,v); // Copy first cell into second
-	vc.set(3, vc2); // Set first from second
+	Cell ex_cell2(dims, true); // Second cell array
+	ex_cell2.set(0,ex_string1); // Set first element = string
+
+    ex_cell1.set(3,ex_cell2); // Copy second cell into first
 
 	// Create struct array (1x1)
 	dims[0] = 1;
 	dims[1] = 1;
 	vector<string> fields = {"test","asd"};
-	Struct ss(dims, fields);
-	ss.set("test",0,vv); // Set first test field to vector sequence
-	ss.set("asd",0,vc); // Set first asd field to first cell
+	Struct ex_struct(dims, fields);
+	ex_struct.set("test",0,ex_colvector); // Set first test field to vector sequence
+	ex_struct.set("asd",0,ex_cell1); // Set first asd field to first cell
 
 	// Create second struct array (1x)
-	Struct sss(dims, fields);
-	sss.set("test",0,v); // Set test = string
-	sss.set("asd",0,vv); // Set asd = vector sequence
-	vc2.set(1,sss); // Set cell2 1 = struct 2
+	Struct ex_struct2(dims, fields);
+	ex_struct2.set("test",0,ex_string1); // Set test = string
+	ex_struct2.set("asd",0,ex_colvector); // Set asd = vector sequence
+
+    // ex_cell2.set(1,ex_struct2); // Set cell2 1 = struct 2
 
 	// Create writer
-	Writer mw("test.mat");
+	Writer matFileNameW("test.mat");
 	// Write each element
-	cout << "res:" << mw.write("vec",vv) << endl;
-	cout << "res:" << mw.write("mat",vvv) << endl;
-	cout << "res:" << mw.write("string",v) << endl;
-	cout << "res:" << mw.write("cell1",vc) << endl;
-	cout << "res:" << mw.write("str",ss) << endl;
-	cout << "res:" << mw.write("cell2",vc2) << endl;
+	cout << "status:" << matFileNameW.write("colvector",ex_colvector) << endl;
+	cout << "status:" << matFileNameW.write("matrix",ex_matrix) << endl;
+	cout << "status:" << matFileNameW.write("string1",ex_string1) << endl;
+	cout << "status:" << matFileNameW.write("cell1",ex_cell1) << endl;
+	cout << "status:" << matFileNameW.write("struct",ex_struct) << endl;
+	cout << "status:" << matFileNameW.write("cell2",ex_cell2) << endl;
+    cout << "status:" << matFileNameW.write("imatrix",ex_imatrix) << endl;
 
 	// Create reader
-	Reader mv("test.mat");
+	Reader matFileNameR("test.mat");
 	// Read each element
-	vec xx = mv.read("vec");
-	mat xxx = mv.read("mat");
-	Cell cc = mv.read("cell1");
-	Struct ss2 = mv.read("str");
-	vec xx2 = cc.get(1);
-	vec xx3 = ss2.get("test",0);
+	colvec ex_colvector1 = matFileNameR.read("colvector");
+    ex_colvector1.print("ex_colvector1=");
 
-	xx.print("XX=");
-	xx2.print("XX2=");
-	xx3.print("XX2=");
-	xxx.print("XXX=");
-	string str = mv.read("string");
-	cout << str << endl;
+	mat ex_matrix1 = matFileNameR.read("matrix");
+    ex_matrix1.print("ex_matrix1");
 
-	mat xxxd = mv.read("vec");
+	Cell ex_cell3 = matFileNameR.read("cell1");
+    string ex_string2a = ex_cell3.get(0);
+    cout<<ex_string2a<<endl;
+    colvec ex_colvector2 = ex_cell3.get(1);
+    ex_colvector2.print("ex_colvector2=");
+
+    Struct ex_struct3 = matFileNameR.read("struct");
+	colvec ex_colvector3 = ex_struct3.get("test",0);
+	ex_colvector3.print("ex_colvector3=");
+
+	string ex_string2 = matFileNameR.read("string1");
+    cout<<"ex_string2="<<ex_string2<<endl;
+
+    imat ex_imatrix2 = matFileNameR.read("imatrix");
+    ex_imatrix2.print("ex_imatrix2=");
 
 	return EXIT_SUCCESS;
 }

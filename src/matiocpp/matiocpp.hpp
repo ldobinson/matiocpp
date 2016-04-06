@@ -29,6 +29,7 @@
 
 namespace matiocpp {
 	using namespace arma;
+    using namespace std;
 
 	class matiocpp_exception : public std::logic_error {
 		public:
@@ -43,7 +44,8 @@ namespace matiocpp {
 	};
 
 	// NOTE: Fwd declaractions to allow for cast operators for MatVar
-	class Struct;
+	class MatVar;
+    class Struct;
 	class Cell;
 
 	/**
@@ -70,7 +72,8 @@ namespace matiocpp {
 			 *
 			 * @param v Armadillo vector
 			 */
-			MatVar(const vec &v) {
+            // SA: rename vec by colvec
+			MatVar(const colvec &v) {
 				// NOTE: Potentially dangerous, but dealing with C-api that expects non-const pointers, despite using them readonly
 				void* x = const_cast<void*>(reinterpret_cast<const void*>(v.memptr()));
 
@@ -81,10 +84,54 @@ namespace matiocpp {
 				_matvar = Mat_VarCreate(NULL, MAT_C_DOUBLE, MAT_T_DOUBLE, 2, dims, x, 0);
 
 				if(!_matvar) {
-					throw matiocpp_exception("can't create mat");
+					throw matiocpp_exception("can't create colvec");
 				}
 			}
+			// SA: added icolvec
+			MatVar(const icolvec &v) {
+				// NOTE: Potentially dangerous, but dealing with C-api that expects non-const pointers, despite using them readonly
+				void* x = const_cast<void*>(reinterpret_cast<const void*>(v.memptr()));
 
+				std::size_t dims[2];
+				dims[0] = v.n_elem; // SA: fix for a column vector 1;
+				dims[1] = 1; // v.n_elem;
+
+				_matvar = Mat_VarCreate(NULL, MAT_C_INT64, MAT_T_INT64, 2, dims, x, 0);
+
+				if(!_matvar) {
+					throw matiocpp_exception("can't create icolvec");
+				}
+			}
+			// SA: added rowvec
+			MatVar(const rowvec &v) {
+				// NOTE: Potentially dangerous, but dealing with C-api that expects non-const pointers, despite using them readonly
+				void* x = const_cast<void*>(reinterpret_cast<const void*>(v.memptr()));
+
+				std::size_t dims[2];
+				dims[0] = 1;
+				dims[1] = v.n_elem;
+
+				_matvar = Mat_VarCreate(NULL, MAT_C_DOUBLE, MAT_T_DOUBLE, 2, dims, x, 0);
+
+				if(!_matvar) {
+					throw matiocpp_exception("can't create rowvec");
+				}
+			}
+			// SA: added irowvec
+			MatVar(const irowvec &v) {
+				// NOTE: Potentially dangerous, but dealing with C-api that expects non-const pointers, despite using them readonly
+				void* x = const_cast<void*>(reinterpret_cast<const void*>(v.memptr()));
+
+				std::size_t dims[2];
+				dims[0] = 1;
+				dims[1] = v.n_elem;
+
+				_matvar = Mat_VarCreate(NULL, MAT_C_INT64, MAT_T_INT64, 2, dims, x, 0);
+
+				if(!_matvar) {
+					throw matiocpp_exception("can't create irowvec");
+				}
+			}
 			/**
 			 * @brief Create matlab variable from matrix
 			 *
@@ -101,7 +148,21 @@ namespace matiocpp {
 				_matvar = Mat_VarCreate(NULL, MAT_C_DOUBLE, MAT_T_DOUBLE, 2, dims, x, 0);
 
 				if(!_matvar) {
-					throw matiocpp_exception("can't create vec");
+					throw matiocpp_exception("can't create mat");
+				}
+			}
+			MatVar(const imat &v) {
+				// NOTE: Potentially dangerous, but dealing with C-api that expects non-const pointers, despite using them readonly
+				void* x = const_cast<void*>(reinterpret_cast<const void*>(v.memptr()));
+
+				std::size_t dims[2];
+				dims[0] = v.n_rows;
+				dims[1] = v.n_cols;
+
+				_matvar = Mat_VarCreate(NULL, MAT_C_INT64, MAT_T_INT64, 2, dims, x, 0);
+
+				if(!_matvar) {
+					throw matiocpp_exception("can't create imat");
 				}
 			}
 
@@ -141,28 +202,107 @@ namespace matiocpp {
 			 *
 			 * @return armadillo vector
 			 */
-			operator vec() const {
+            // SA: renamed vec by colvec
+			operator colvec() const {
 				if(!_matvar) {
 					throw matiocpp_castexception("Can't cast not-instantiate");
 				}
 
 				if(_matvar->data_type != MAT_T_DOUBLE && _matvar->class_type != MAT_C_DOUBLE) {
-					throw matiocpp_castexception("Cannot be cast to vec: wrong type");
+					throw matiocpp_castexception("Cannot be cast to colvec: wrong type");
 				}
 
 				if(_matvar->isComplex) {
-					throw matiocpp_castexception("Cannot be cast to vec: is complex");
+					throw matiocpp_castexception("Cannot be cast to colvec: is complex");
 				}
-
-				if(_matvar->rank != 2 || (_matvar->dims[0] != 1 && _matvar->dims[1] != 1)) {
-					throw matiocpp_castexception("Cannot be cast to vec: wrong rank/dimension");
+                // SA: fixed dimension checking
+				if(_matvar->dims[1] != 1) {
+					throw matiocpp_castexception("Cannot be cast to colvec: wrong dimension");
 				}
 
 				int nelem = _matvar->dims[0] * _matvar->dims[1];
 				double *data = reinterpret_cast<double*>(_matvar->data);
 
 				// FIXME: This means copying the data, but we have to as the _matvar data might not be alive for the same duration as the vec we are returning.
-				vec x(data,nelem,true);
+				colvec x(data,nelem,true);
+
+				return x;
+			}
+			// SA: added icolvec
+			operator icolvec() const {
+				if(!_matvar) {
+					throw matiocpp_castexception("Can't cast not-instantiate");
+				}
+
+				if(_matvar->data_type != MAT_T_INT64 && _matvar->class_type != MAT_C_INT64) {
+					throw matiocpp_castexception("Cannot be cast to icolvec: wrong type");
+				}
+
+				if(_matvar->isComplex) {
+					throw matiocpp_castexception("Cannot be cast to icolvec: is complex");
+				}
+                // SA: fixed dimension checking
+				if(_matvar->dims[1] != 1) {
+					throw matiocpp_castexception("Cannot be cast to icolvec: wrong dimension");
+				}
+
+				int nelem = _matvar->dims[0] * _matvar->dims[1];
+				long long *data = reinterpret_cast<long long*>(_matvar->data);
+
+				// FIXME: This means copying the data, but we have to as the _matvar data might not be alive for the same duration as the vec we are returning.
+				icolvec x(data,nelem,true);
+
+				return x;
+			}
+			// SA: added rowvec
+			operator rowvec() const {
+				if(!_matvar) {
+					throw matiocpp_castexception("Can't cast not-instantiate");
+				}
+
+				if(_matvar->data_type != MAT_T_DOUBLE && _matvar->class_type != MAT_C_DOUBLE) {
+					throw matiocpp_castexception("Cannot be cast to rowvec: wrong type");
+				}
+
+				if(_matvar->isComplex) {
+					throw matiocpp_castexception("Cannot be cast to rowvec: is complex");
+				}
+
+				if (_matvar->dims[0] != 1) {
+					throw matiocpp_castexception("Cannot be cast to rowvec: wrong dimension");
+				}
+
+				int nelem = _matvar->dims[0] * _matvar->dims[1];
+				double *data = reinterpret_cast<double*>(_matvar->data);
+
+				// FIXME: This means copying the data, but we have to as the _matvar data might not be alive for the same duration as the vec we are returning.
+				rowvec x(data,nelem,true);
+
+				return x;
+			}
+			// SA: added irowvec
+			operator irowvec() const {
+				if(!_matvar) {
+					throw matiocpp_castexception("Can't cast not-instantiate");
+				}
+
+				if(_matvar->data_type != MAT_T_INT64 && _matvar->class_type != MAT_C_INT64) {
+					throw matiocpp_castexception("Cannot be cast to irowvec: wrong type");
+				}
+
+				if(_matvar->isComplex) {
+					throw matiocpp_castexception("Cannot be cast to irowvec: is complex");
+				}
+                // SA: fixed dimension checking
+				if(_matvar->dims[1] != 1) {
+					throw matiocpp_castexception("Cannot be cast to irowvec: wrong dimension");
+				}
+
+				int nelem = _matvar->dims[0] * _matvar->dims[1];
+				long long *data = reinterpret_cast<long long*>(_matvar->data);
+
+				// FIXME: This means copying the data, but we have to as the _matvar data might not be alive for the same duration as the vec we are returning.
+				irowvec x(data,nelem,true);
 
 				return x;
 			}
@@ -196,6 +336,33 @@ namespace matiocpp {
 
 				// FIXME: This means copying the data, but we have to as the _matvar data might not be alive for the same duration as the vec we are returning.
 				mat x(data,nrows,ncols,true);
+
+				return x;
+			}
+			operator imat() const {
+				if(!_matvar) {
+					throw matiocpp_castexception("Can't cast not-instantiate");
+				}
+
+				if(_matvar->data_type != MAT_T_INT64 && _matvar->class_type != MAT_C_INT64) {
+					throw matiocpp_castexception("Cannot be cast to mat: wrong type");
+				}
+
+				if(_matvar->isComplex) {
+					throw matiocpp_castexception("Cannot be cast to mat: is complex");
+				}
+
+				if(_matvar->rank != 2) {
+					throw matiocpp_castexception("Cannot be cast to mat: wrong rank");
+				}
+
+				int nrows = _matvar->dims[0];
+				int ncols = _matvar->dims[1];
+
+				long long *data = reinterpret_cast<long long*>(_matvar->data);
+
+				// FIXME: This means copying the data, but we have to as the _matvar data might not be alive for the same duration as the vec we are returning.
+				imat x(data,nrows,ncols,true);
 
 				return x;
 			}
@@ -360,7 +527,8 @@ namespace matiocpp {
 			 */
 			void set(const std::size_t i, const MatVar &v) {
 				if(i >= _nelem) {
-					throw matiocpp_exception("Out of bounds");
+					cout << "i = " << i << ", nelem = " << _nelem << endl;
+                    throw matiocpp_exception("Cell's set out of bounds");
 				}
 
 				MatVar mv(v);
@@ -396,7 +564,8 @@ namespace matiocpp {
 			 */
 			MatVar get(const std::size_t i) {
 				if(i >= _nelem) {
-					throw matiocpp_exception("Out of bounds");
+                    cout << "i = " << i << ", nelem = " << _nelem << endl;
+					throw matiocpp_exception("Cell's get out of bounds");
 				}
 
 				matvar_t *m = Mat_VarGetCell(_mptr, i);
@@ -615,7 +784,8 @@ namespace matiocpp {
 			 */
 			void set(const char *nam, const std::size_t i, const MatVar &v) {
 				if(i >= _nelem) {
-					throw matiocpp_exception("Out of bounds");
+					cout << "i = " << i << ", nelem = " << _nelem << endl;
+                    throw matiocpp_exception("Struct's set out of bounds");
 				}
 
 				matvar_t *m = Mat_VarSetStructFieldByName(_mptr, nam, i, v);
@@ -633,7 +803,8 @@ namespace matiocpp {
 			 */
 			MatVar get(const char *nam, const std::size_t i) {
 				if(i >= _nelem) {
-					throw matiocpp_exception("Out of bounds");
+					cout << "i = " << i << ", nelem = " << _nelem << endl;
+                    throw matiocpp_exception("Struct's set out of bounds");
 				}
 
 				matvar_t *m = Mat_VarGetStructFieldByName(_mptr, nam, i);
@@ -716,7 +887,8 @@ namespace matiocpp {
 			 * @param fmt format type, defaults to matio library default
 			 */
 			Writer(const char *name, const char *hdr=NULL, mat_ft fmt=MAT_FT_DEFAULT) : _matfp(0) {
-				_matfp = Mat_CreateVer(name, hdr, fmt);
+                // _matfp = Mat_CreateVer(name, hdr, fmt);
+                _matfp = Mat_Open(name, MAT_ACC_RDWR);
 
 				if(!_matfp) {
 					throw matiocpp_exception("Could not open file");
@@ -741,13 +913,23 @@ namespace matiocpp {
 			 *
 			 * @return
 			 */
-			int write(const char *filename, const MatVar &mc, matio_compression compress = MAT_COMPRESSION_NONE) {
+            // int write(const char *filename, const MatVar &mc, matio_compression compress = MAT_COMPRESSION_NONE) {
+			bool write(const char *filename, const MatVar &mc, matio_compression compress = MAT_COMPRESSION_NONE) {
 				// NOTE: Potentially dangerous, but dealing with C-api that expects non-const pointers, despite using them readonly
 				mc->name = const_cast<char*>(filename);
 
 				int res = Mat_VarWrite(_matfp, mc, MAT_COMPRESSION_NONE);
 
-				return res;
+                bool status;
+                if (res == 0) {
+                  status = true;
+                }
+                else {
+                  status = false;
+                }
+
+                // return res;
+                return status;
 			}
 
 		private:
