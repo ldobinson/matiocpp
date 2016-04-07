@@ -95,7 +95,7 @@ int main(int argc, char **argv) {
 	mat ex_matrix1 = matFileNameR.read("matrix");
     ex_matrix1.print("ex_matrix1");
 
-	Cell ex_cell3 = matFileNameR.read("cell1");
+    Cell ex_cell3 = matFileNameR.read("cell1");
     string ex_string2a = ex_cell3.get(0);
     cout<<ex_string2a<<endl;
     colvec ex_colvector2 = ex_cell3.get(1);

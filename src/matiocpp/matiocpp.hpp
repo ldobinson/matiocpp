@@ -893,6 +893,7 @@ namespace matiocpp {
 				if(!_matfp) {
                     _matfp = Mat_CreateVer(name, hdr, fmt);
                     if(!_matfp) {
+                        cout << fmt << endl;
                         throw matiocpp_exception("Could not open file");
                     }
 				}
@@ -921,7 +922,8 @@ namespace matiocpp {
 				// NOTE: Potentially dangerous, but dealing with C-api that expects non-const pointers, despite using them readonly
 				mc->name = const_cast<char*>(filename);
 
-				int res = Mat_VarWrite(_matfp, mc, MAT_COMPRESSION_NONE);
+				// int res = Mat_VarWrite(_matfp, mc, MAT_COMPRESSION_NONE);
+                int res = Mat_VarWrite(_matfp, mc, compress);
 
                 bool status;
                 if (res == 0) {
@@ -951,6 +953,7 @@ namespace matiocpp {
 			 */
 			Reader(const char *name) : _matfp(0) {
 				_matfp = Mat_Open(name, MAT_ACC_RDONLY);
+                // _matfp = Mat_Open(name, MAT_ACC_RDWR);
 
 				if(!_matfp) {
 					throw matiocpp_exception("Could not open file");
