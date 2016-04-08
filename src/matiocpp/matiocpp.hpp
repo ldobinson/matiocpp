@@ -927,22 +927,20 @@ namespace matiocpp {
 
         if (hasvariable(mc->name)) {
           // cout << "Deleting existing variable before saving: " << mc->name <<endl;
-          Mat_Close(_matfp);
-          _matfp = Mat_Open(_matFilename,MAT_ACC_RDWR);
           int resDel = Mat_VarDelete(_matfp, mc->name);
-          Mat_Close(_matfp);
-          _matfp = Mat_Open(_matFilename,MAT_ACC_RDWR);
           if (resDel != 0) {
             throw matiocpp_exception("Could not delete the variable");
           }
           else {
             if (hasvariable(mc->name)) {
-              cout << "Saving was inefficient: previously stored values have not been deleted" <<endl;
+              cout << "Saving was inefficient: previously stored values were not deleted" <<endl;
             }
           }
         }
 
         int res = Mat_VarWrite(_matfp, mc, compress);
+        Mat_Close(_matfp);
+        _matfp = Mat_Open(_matFilename,MAT_ACC_RDWR);
 
         return res;
       }
