@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (c) 2014 <Lars Johannesen> All rights statuserved.               *
+ * Copyright (c) 2014 <Lars Johannesen> All rights reserved.               *
  *                                                                         *
  * This file is part of MATIOCPP                                           *
  *                                                                         *
@@ -19,31 +19,30 @@
  * compile with: g++ example.cpp -o example -larmadillo -lmatio -std=c++11 *
  ***************************************************************************/
 #include <armadillo>
-#include <cstdlib>
-#include <cstdio>
 #include <matiocpp/matiocpp.hpp>
 
+using namespace std;
+using namespace matiocpp;
+using namespace arma;
+
 int main(int argc, char **argv) {
-	using namespace std;
-	using namespace matiocpp;
-	using namespace arma;
 
 	// Create vector sequence
 	colvec ex_colvector = zeros<colvec>(10);
 	for(size_t i = 0; i < 10; ++i) ex_colvector(i) = i;
-    ex_colvector.print("ex_colvector=");
+    ex_colvector.print("ex_colvector =");
 
 	// Create random matrix
 	mat ex_matrix = randu<mat>(5,5);
-	ex_matrix.print("ex_matrix=");
+	ex_matrix.print("ex_matrix =");
 
     // Create int matrix
 	imat ex_imatrix = randi<imat>(2, 3, distr_param(0,10));
-	ex_matrix.print("ex_imatrix=");
+	ex_imatrix.print("ex_imatrix =");
 
     // string
 	string ex_string1("hello");
-    cout<<"ex_string1="<<ex_string1<<endl;
+    cout << "ex_string1 = " << ex_string1 << endl;
 
 	// Create cell array 10x1
 	vector<size_t> dims(2);
@@ -78,38 +77,41 @@ int main(int argc, char **argv) {
 	// Create writer
 	Writer matFileNameW("test.mat");
 	// Write each element
-	cout << "status:" << matFileNameW.write("colvector",ex_colvector) << endl;
-	cout << "status:" << matFileNameW.write("matrix",ex_matrix) << endl;
-	cout << "status:" << matFileNameW.write("string1",ex_string1) << endl;
-	cout << "status:" << matFileNameW.write("cell1",ex_cell1) << endl;
-	cout << "status:" << matFileNameW.write("struct",ex_struct2) << endl;
-	cout << "status:" << matFileNameW.write("cell2",ex_cell2) << endl;
-    cout << "status:" << matFileNameW.write("imatrix",ex_imatrix) << endl;
+	cout << "status: " << matFileNameW.write("colvector",ex_colvector) << endl;
+	cout << "status: " << matFileNameW.write("matrix",ex_matrix) << endl;
+	cout << "status: " << matFileNameW.write("string1",ex_string1) << endl;
+	cout << "status: " << matFileNameW.write("cell1",ex_cell1) << endl;
+	cout << "status: " << matFileNameW.write("struct",ex_struct2) << endl;
+	cout << "status: " << matFileNameW.write("cell2",ex_cell2) << endl;
+    cout << "status: " << matFileNameW.write("imatrix",ex_imatrix) << endl;
 
 	// Create reader
 	Reader matFileNameR("test.mat");
 	// Read each element
 	colvec ex_colvector1 = matFileNameR.read("colvector");
-    ex_colvector1.print("ex_colvector1=");
+    ex_colvector1.print("ex_colvector1 =");
 
 	mat ex_matrix1 = matFileNameR.read("matrix");
     ex_matrix1.print("ex_matrix1");
 
+    mat ex_matrix2 = ex_matrix1*ex_matrix1;
+    ex_matrix2.print("ex_matrix2 =");
+
     Cell ex_cell3 = matFileNameR.read("cell1");
     string ex_string2a = ex_cell3.get(0);
-    cout<<ex_string2a<<endl;
+    cout << "ex_string2a = " << ex_string2a << endl;
     colvec ex_colvector2 = ex_cell3.get(1);
-    ex_colvector2.print("ex_colvector2=");
+    ex_colvector2.print("ex_colvector2 =");
 
     Struct ex_struct3 = matFileNameR.read("struct");
 	colvec ex_colvector3 = ex_struct3.get("asd",0);
-	ex_colvector3.print("ex_colvector3=");
+	ex_colvector3.print("ex_colvector3 =");
 
 	string ex_string2 = matFileNameR.read("string1");
-    cout<<"ex_string2="<<ex_string2<<endl;
+    cout << "ex_string2 = " << ex_string2 << endl;
 
     imat ex_imatrix2 = matFileNameR.read("imatrix");
-    ex_imatrix2.print("ex_imatrix2=");
+    ex_imatrix2.print("ex_imatrix2 =");
 
 	return EXIT_SUCCESS;
 }
