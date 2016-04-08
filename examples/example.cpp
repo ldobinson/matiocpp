@@ -74,43 +74,43 @@ int main(int argc, char **argv) {
 
     // ex_cell2.set(1,ex_struct2); // Set cell2 1 = struct 2
 
-	// Create writer
-	Writer matFileNameW("test.mat");
+	// Create saver
+	Saver matFileNameW("test.mat");
 	// Write each element
-	cout << "status: " << matFileNameW.write("colvector",ex_colvector) << endl;
-	cout << "status: " << matFileNameW.write("matrix",ex_matrix) << endl;
-	cout << "status: " << matFileNameW.write("string1",ex_string1) << endl;
-	cout << "status: " << matFileNameW.write("cell1",ex_cell1) << endl;
-	cout << "status: " << matFileNameW.write("struct",ex_struct2) << endl;
-	cout << "status: " << matFileNameW.write("cell2",ex_cell2) << endl;
-    cout << "status: " << matFileNameW.write("imatrix",ex_imatrix) << endl;
+	cout << "status: " << matFileNameW.save("colvector",ex_colvector) << endl;
+	cout << "status: " << matFileNameW.save("matrix",ex_matrix) << endl;
+	cout << "status: " << matFileNameW.save("string1",ex_string1) << endl;
+	cout << "status: " << matFileNameW.save("cell1",ex_cell1) << endl;
+	cout << "status: " << matFileNameW.save("struct",ex_struct2) << endl;
+	cout << "status: " << matFileNameW.save("cell2",ex_cell2) << endl;
+    cout << "status: " << matFileNameW.save("imatrix",ex_imatrix) << endl;
 
-	// Create reader
-	Reader matFileNameR("test.mat");
+	// Create loader
+	Loader matFileNameR("test.mat");
 	// Read each element
-	colvec ex_colvector1 = matFileNameR.read("colvector");
+	colvec ex_colvector1 = matFileNameR.load("colvector");
     ex_colvector1.print("ex_colvector1 =");
 
-	mat ex_matrix1 = matFileNameR.read("matrix");
+	mat ex_matrix1 = matFileNameR.load("matrix");
     ex_matrix1.print("ex_matrix1");
 
     mat ex_matrix2 = ex_matrix1*ex_matrix1;
     ex_matrix2.print("ex_matrix2 =");
 
-    Cell ex_cell3 = matFileNameR.read("cell1");
+    Cell ex_cell3 = matFileNameR.load("cell1");
     string ex_string2a = ex_cell3.get(0);
     cout << "ex_string2a = " << ex_string2a << endl;
     colvec ex_colvector2 = ex_cell3.get(1);
     ex_colvector2.print("ex_colvector2 =");
 
-    Struct ex_struct3 = matFileNameR.read("struct");
+    Struct ex_struct3 = matFileNameR.load("struct");
 	colvec ex_colvector3 = ex_struct3.get("asd",0);
 	ex_colvector3.print("ex_colvector3 =");
 
-	string ex_string2 = matFileNameR.read("string1");
+	string ex_string2 = matFileNameR.load("string1");
     cout << "ex_string2 = " << ex_string2 << endl;
 
-    imat ex_imatrix2 = matFileNameR.read("imatrix");
+    imat ex_imatrix2 = matFileNameR.load("imatrix");
     ex_imatrix2.print("ex_imatrix2 =");
 
 	return EXIT_SUCCESS;

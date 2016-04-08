@@ -437,8 +437,8 @@ namespace matiocpp {
 
       friend class Struct;
       friend class Cell;
-      friend class Reader;
-      friend class Writer;
+      friend class Loader;
+      friend class Saver;
 
     private:
       matvar_t *_matvar;
@@ -634,8 +634,8 @@ namespace matiocpp {
       }
 
       friend class Struct;
-        friend class Reader;
-        friend class Writer;
+        friend class Loader;
+        friend class Saver;
 
     private:
       MatVar _mptr;
@@ -847,8 +847,8 @@ namespace matiocpp {
       }
 
       friend class Cell;
-      friend class Reader;
-      friend class Writer;
+      friend class Loader;
+      friend class Saver;
 
     private:
       MatVar _mptr;
@@ -875,18 +875,18 @@ namespace matiocpp {
   }
 
   /**
-   * @brief Writer for matlab files
+   * @brief Saver for matlab files
    */
-  class Writer {
+  class Saver {
     public:
        /**
-       * @brief Writer constructor
+       * @brief Saver constructor
        *
        * @param matFilename name of file
-       * @param hdr header to write
+       * @param hdr header to save
        * @param fmt format type, defaults to matio library default
        */
-      Writer(const char *matFilename, const char *hdr=NULL, mat_ft fmt=MAT_FT_DEFAULT) : _matfp(0) {
+      Saver(const char *matFilename, const char *hdr=NULL, mat_ft fmt=MAT_FT_DEFAULT) : _matfp(0) {
         _matFilename = matFilename;
         _matfp = Mat_Open(_matFilename, MAT_ACC_RDWR);
         // _matfp = Mat_CreateVer(_matFilename, hdr, fmt);
@@ -900,9 +900,9 @@ namespace matiocpp {
       }
 
       /**
-       * @brief Close writer and file
+       * @brief Close saver and file
        */
-      ~Writer() {
+      ~Saver() {
         if(!_matfp) {
           Mat_Close(_matfp);
         }
@@ -910,7 +910,7 @@ namespace matiocpp {
 
     public:
       /**
-       * @brief write variable to file
+       * @brief save variable to file
        *
        * @param varName variable name
        * @param mc matlab variable
@@ -918,15 +918,15 @@ namespace matiocpp {
        *
        * @return
        */
-      // int write(const char *varName, const MatVar &mc, matio_compression compress = MAT_COMPRESSION_NONE) {
-      int write(const char *varName, const MatVar &mc, matio_compression compress = MAT_COMPRESSION_ZLIB) {
+      // int save(const char *varName, const MatVar &mc, matio_compression compress = MAT_COMPRESSION_NONE) {
+      int save(const char *varName, const MatVar &mc, matio_compression compress = MAT_COMPRESSION_ZLIB) {
         // NOTE: Potentially dangerous, but dealing with C-api that expects non-const pointers, despite using them readonly
 
         mc->name = const_cast<char*>(varName);
-        cout << "Saving variable: " << mc->name <<endl;
+        // cout << "Saving variable: " << mc->name <<endl;
 
         if (hasvariable(mc->name)) {
-          cout << "Deleting existing variable before saving: " << mc->name <<endl;
+          // cout << "Deleting existing variable before saving: " << mc->name <<endl;
           Mat_Close(_matfp);
           _matfp = Mat_Open(_matFilename,MAT_ACC_RDWR);
           int resDel = Mat_VarDelete(_matfp, mc->name);
@@ -937,13 +937,11 @@ namespace matiocpp {
           }
           else {
             if (hasvariable(mc->name)) {
-              cout << "Res equal to 0 means variable has been deleted: " << resDel <<endl;
-              cout << "but, mmm weird, variable is still present: " << mc->name <<endl;
+              cout << "Saving was inefficient: previously stored values have not been deleted" <<endl;
             }
           }
         }
 
-        // res = Mat_VarWrite(_matfp, mc, MAT_COMPRESSION_NONE);
         int res = Mat_VarWrite(_matfp, mc, compress);
 
         return res;
@@ -959,7 +957,7 @@ namespace matiocpp {
        */
       bool hasvariable(const char *varName) {
         matvar_t *var = Mat_VarReadInfo(_matfp, varName);
-        cout << "mat file has variable: " << varName << endl;
+        // cout << "mat file has variable: " << varName << endl;
 
         return var!=NULL;
       }
@@ -970,16 +968,16 @@ namespace matiocpp {
   };
 
   /**
-   * @brief Reader class
+   * @brief Loader class
    */
-  class Reader {
+  class Loader {
     public:
        /**
-       * @brief Read matlab file
+       * @brief Load matlab file
        *
        * @param matFilename matlab filename
        */
-      Reader(const char *matFilename) : _matfp(0) {
+      Loader(const char *matFilename) : _matfp(0) {
         _matFilename = matFilename;
         _matfp = Mat_Open(_matFilename, MAT_ACC_RDONLY);
 
@@ -991,7 +989,7 @@ namespace matiocpp {
       /**
        * @brief Close matlab file
        */
-      ~Reader() {
+      ~Loader() {
         if(!_matfp) {
           Mat_Close(_matfp);
         }
@@ -999,13 +997,13 @@ namespace matiocpp {
 
     public:
       /**
-       * @brief Reads variable from file, throws an exception if it does not exist
+       * @brief Loads variable from file, throws an exception if it does not exist
        *
        * @param varName Variable name
        *
        * @return variable
        */
-      MatVar read(const char *varName) {
+      MatVar load(const char *varName) {
         matvar_t *var = Mat_VarRead(_matfp, varName);
 
         if (var == NULL) {
