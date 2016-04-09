@@ -1,6 +1,6 @@
 /***************************************************************************
- * Copyright (c) 2016 <Salva Ardid> All rights reserved.                   *
- * Based on previous version by Lars Johannesen                            *
+ * Copyright (c) 2016 <Salva Ardid>                                        *
+ * Copyright (c) 2014 <Lars Johannesen> All rights reserved.               *
  *                                                                         *
  * This file is part of MATIOCPP                                           *
  *                                                                         *

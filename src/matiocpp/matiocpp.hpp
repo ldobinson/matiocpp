@@ -1,6 +1,6 @@
 /***************************************************************************
- * Copyright (c) 2016 <Salva Ardid> All rights reserved.                   *
- * Based on previous version by Lars Johannesen                            *
+ * Copyright (c) 2016 <Salva Ardid>                                        *
+ * Copyright (c) 2014 <Lars Johannesen> All rights reserved                *
  *                                                                         *
  * This file is part of MATIOCPP                                           *
  *                                                                         *
@@ -890,8 +890,6 @@ namespace matiocpp {
       Saver(const char *matFilename, const char *hdr=NULL, mat_ft fmt=MAT_FT_DEFAULT) : _matfp(0) {
         _matFilename = matFilename;
         _matfp = Mat_Open(_matFilename, MAT_ACC_RDWR);
-        // _matfp = Mat_CreateVer(_matFilename, hdr, fmt);
-
         if(!_matfp) {
           _matfp = Mat_CreateVer(_matFilename, hdr, fmt);
           if(!_matfp) {
@@ -926,39 +924,11 @@ namespace matiocpp {
         mc->name = const_cast<char*>(varName);
         // cout << "Saving variable: " << mc->name <<endl;
 
-        if (hasvariable(mc->name)) {
-          // cout << "Deleting existing variable before saving: " << mc->name <<endl;
-          int resDel = Mat_VarDelete(_matfp, mc->name);
-          if (resDel != 0) {
-            throw matiocpp_exception("Could not delete the variable");
-          }
-          else {
-            if (hasvariable(mc->name)) {
-              cout << "Saving was inefficient: previously stored values were not deleted" <<endl;
-            }
-          }
-        }
-
+        Mat_Rewind(_matfp);
+        int resDel = Mat_VarDelete(_matfp, mc->name);
         int res = Mat_VarWrite(_matfp, mc, compress);
-        Mat_Close(_matfp);
-        _matfp = Mat_Open(_matFilename,MAT_ACC_RDWR);
 
         return res;
-      }
-
-    private:
-      /**
-       * @brief Returns if file has variable
-       *
-       * @param varName Variable name
-       *
-       * @return true if variable name exists
-       */
-      bool hasvariable(const char *varName) {
-        matvar_t *var = Mat_VarReadInfo(_matfp, varName);
-        // cout << "mat file has variable: " << varName << endl;
-
-        return var!=NULL;
       }
 
     private:
@@ -1033,5 +1003,4 @@ namespace matiocpp {
       const char *_matFilename;
   };
 }
-
 #endif
