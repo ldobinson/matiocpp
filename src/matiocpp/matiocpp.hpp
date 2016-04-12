@@ -924,7 +924,6 @@ namespace matiocpp {
         mc->name = const_cast<char*>(varName);
         // cout << "Saving variable: " << mc->name <<endl;
 
-        Mat_Rewind(_matfp); // Line to be removed once this fix is released in the official MATIO library
         int resDel = Mat_VarDelete(_matfp, mc->name);
         int res = Mat_VarWrite(_matfp, mc, compress);
 

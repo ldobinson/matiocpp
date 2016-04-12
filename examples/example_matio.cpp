@@ -37,9 +37,7 @@ int main(void) {
   Mat_VarWrite(mat, matvar1, MAT_COMPRESSION_ZLIB);
   Mat_VarWrite(mat, matvar2, MAT_COMPRESSION_ZLIB);
 
-  Mat_Rewind(mat); // Line to be removed once this fix is released in the official MATIO library
   resDel = Mat_VarDelete(mat, varName1);
-  Mat_Rewind(mat); // Line to be removed once this fix is released in the official MATIO library
   resDel = Mat_VarDelete(mat, varName2);
 
   Mat_VarWrite(mat, matvar1, MAT_COMPRESSION_ZLIB);
