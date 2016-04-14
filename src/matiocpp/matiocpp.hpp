@@ -73,8 +73,7 @@ namespace matiocpp {
        *
        * @param v Armadillo vector
        */
-      // SA: rename vec by colvec
-      MatVar(const colvec &v) {
+      MatVar(const vec &v) {
         // NOTE: Potentially dangerous, but dealing with C-api that expects non-const pointers, despite using them readonly
         void* x = const_cast<void*>(reinterpret_cast<const void*>(v.memptr()));
 
@@ -85,11 +84,11 @@ namespace matiocpp {
         _matvar = Mat_VarCreate(NULL, MAT_C_DOUBLE, MAT_T_DOUBLE, 2, dims, x, 0);
 
         if(!_matvar) {
-          throw matiocpp_exception("can't create colvec");
+          throw matiocpp_exception("can't create vec");
         }
       }
-      // SA: added icolvec
-      MatVar(const icolvec &v) {
+      // SA: added ivec
+      MatVar(const ivec &v) {
         // NOTE: Potentially dangerous, but dealing with C-api that expects non-const pointers, despite using them readonly
         void* x = const_cast<void*>(reinterpret_cast<const void*>(v.memptr()));
 
@@ -100,7 +99,7 @@ namespace matiocpp {
         _matvar = Mat_VarCreate(NULL, MAT_C_INT64, MAT_T_INT64, 2, dims, x, 0);
 
         if(!_matvar) {
-          throw matiocpp_exception("can't create icolvec");
+          throw matiocpp_exception("can't create ivec");
         }
       }
       // SA: added rowvec
@@ -203,55 +202,54 @@ namespace matiocpp {
        *
        * @return armadillo vector
        */
-      // SA: renamed vec by colvec
-      operator colvec() const {
+      operator vec() const {
         if(!_matvar) {
           throw matiocpp_castexception("Can't cast not-instantiate");
         }
 
         if(_matvar->data_type != MAT_T_DOUBLE && _matvar->class_type != MAT_C_DOUBLE) {
-          throw matiocpp_castexception("Cannot be cast to colvec: wrong type");
+          throw matiocpp_castexception("Cannot be cast to vec: wrong type");
         }
 
         if(_matvar->isComplex) {
-          throw matiocpp_castexception("Cannot be cast to colvec: is complex");
+          throw matiocpp_castexception("Cannot be cast to vec: is complex");
         }
         // SA: fixed dimension checking
         if(_matvar->dims[1] != 1) {
-          throw matiocpp_castexception("Cannot be cast to colvec: wrong dimension");
+          throw matiocpp_castexception("Cannot be cast to vec: wrong dimension");
         }
 
         int nelem = _matvar->dims[0] * _matvar->dims[1];
         double *data = reinterpret_cast<double*>(_matvar->data);
 
         // FIXME: This means copying the data, but we have to as the _matvar data might not be alive for the same duration as the vec we are returning.
-        colvec x(data,nelem,true);
+        vec x(data,nelem,true);
 
         return x;
       }
-      // SA: added icolvec
-      operator icolvec() const {
+      // SA: added ivec
+      operator ivec() const {
         if(!_matvar) {
           throw matiocpp_castexception("Can't cast not-instantiate");
         }
 
         if(_matvar->data_type != MAT_T_INT64 && _matvar->class_type != MAT_C_INT64) {
-          throw matiocpp_castexception("Cannot be cast to icolvec: wrong type");
+          throw matiocpp_castexception("Cannot be cast to ivec: wrong type");
         }
 
         if(_matvar->isComplex) {
-          throw matiocpp_castexception("Cannot be cast to icolvec: is complex");
+          throw matiocpp_castexception("Cannot be cast to ivec: is complex");
         }
         // SA: fixed dimension checking
         if(_matvar->dims[1] != 1) {
-          throw matiocpp_castexception("Cannot be cast to icolvec: wrong dimension");
+          throw matiocpp_castexception("Cannot be cast to ivec: wrong dimension");
         }
 
         int nelem = _matvar->dims[0] * _matvar->dims[1];
         long long *data = reinterpret_cast<long long*>(_matvar->data);
 
         // FIXME: This means copying the data, but we have to as the _matvar data might not be alive for the same duration as the vec we are returning.
-        icolvec x(data,nelem,true);
+        ivec x(data,nelem,true);
 
         return x;
       }

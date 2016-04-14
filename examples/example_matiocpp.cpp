@@ -29,9 +29,9 @@ using namespace arma;
 int main(int argc, char **argv) {
 
 	// Create vector sequence
-	colvec ex_colvector = zeros<colvec>(10);
-	for(size_t i = 0; i < 10; ++i) ex_colvector(i) = i;
-    ex_colvector.print("ex_colvector =");
+	vec ex_vector = zeros<vec>(10);
+	for(size_t i = 0; i < 10; ++i) ex_vector(i) = i;
+    ex_vector.print("ex_vector =");
 
 	// Create random matrix
 	mat ex_matrix = randu<mat>(5,5);
@@ -52,7 +52,7 @@ int main(int argc, char **argv) {
 
 	Cell ex_cell1(dims, true); // fill with empty matrices
 	ex_cell1.set(0,ex_string1); // Set first element = string
-	ex_cell1.set(1,ex_colvector); // Set second element = vector sequence
+	ex_cell1.set(1,ex_vector); // Set second element = vector sequence
 	ex_cell1.set(2,ex_matrix); // Set third element = matrix
 
 	Cell ex_cell2(dims, true); // Second cell array
@@ -65,20 +65,20 @@ int main(int argc, char **argv) {
 	dims[1] = 1;
 	vector<string> fields = {"test","asd"};
 	Struct ex_struct(dims, fields);
-	ex_struct.set("test",0,ex_colvector); // Set first test field to vector sequence
+	ex_struct.set("test",0,ex_vector); // Set first test field to vector sequence
 	ex_struct.set("asd",0,ex_cell1); // Set first asd field to first cell
 
 	// Create second struct array (1x)
 	Struct ex_struct2(dims, fields);
 	ex_struct2.set("test",0,ex_string1); // Set test = string
-	ex_struct2.set("asd",0,ex_colvector); // Set asd = vector sequence
+	ex_struct2.set("asd",0,ex_vector); // Set asd = vector sequence
 
     // ex_cell2.set(1,ex_struct2); // Set cell2 1 = struct 2
 
 	// Create saver
 	Saver matFileNameW("test.mat");
 	// Write each element
-	cout << "status: " << matFileNameW.save("colvector",ex_colvector) << endl;
+	cout << "status: " << matFileNameW.save("vector",ex_vector) << endl;
 	cout << "status: " << matFileNameW.save("matrix",ex_matrix) << endl;
 	cout << "status: " << matFileNameW.save("string1",ex_string1) << endl;
 	cout << "status: " << matFileNameW.save("cell1",ex_cell1) << endl;
@@ -89,8 +89,8 @@ int main(int argc, char **argv) {
 	// Create loader
 	Loader matFileNameR("test.mat");
 	// Read each element
-	colvec ex_colvector1 = matFileNameR.load("colvector");
-    ex_colvector1.print("ex_colvector1 =");
+	vec ex_vector1 = matFileNameR.load("vector");
+    ex_vector1.print("ex_vector1 =");
 
 	mat ex_matrix1 = matFileNameR.load("matrix");
     ex_matrix1.print("ex_matrix1");
@@ -101,12 +101,12 @@ int main(int argc, char **argv) {
     Cell ex_cell3 = matFileNameR.load("cell1");
     string ex_string2a = ex_cell3.get(0);
     cout << "ex_string2a = " << ex_string2a << endl;
-    colvec ex_colvector2 = ex_cell3.get(1);
-    ex_colvector2.print("ex_colvector2 =");
+    vec ex_vector2 = ex_cell3.get(1);
+    ex_vector2.print("ex_vector2 =");
 
     Struct ex_struct3 = matFileNameR.load("struct");
-	colvec ex_colvector3 = ex_struct3.get("asd",0);
-	ex_colvector3.print("ex_colvector3 =");
+	vec ex_vector3 = ex_struct3.get("asd",0);
+	ex_vector3.print("ex_vector3 =");
 
 	string ex_string2 = matFileNameR.load("string1");
     cout << "ex_string2 = " << ex_string2 << endl;
