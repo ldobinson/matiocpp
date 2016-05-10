@@ -525,6 +525,12 @@ namespace matiocpp {
        * @param v value
        */
       void set(const std::size_t i, const MatVar &v) {
+        _ndims = _mptr->rank;
+        for(std::size_t i = 0; i < _ndims; ++i) {
+          _dims[i] = _mptr->dims[i];
+          _idims[i] = _mptr->dims[i];
+        }
+        _nelem = static_cast<int>(prod(_idims));
         if(i >= _nelem) {
           cout << "i = " << i << ", nelem = " << _nelem << endl;
           throw matiocpp_exception("Cell's set out of bounds");
@@ -562,6 +568,14 @@ namespace matiocpp {
        * @return MatVar
        */
       MatVar get(const std::size_t i) {
+
+        _ndims = _mptr->rank;
+        for(std::size_t i = 0; i < _ndims; ++i) {
+          _dims[i] = _mptr->dims[i];
+          _idims[i] = _mptr->dims[i];
+        }
+        _nelem = static_cast<int>(prod(_idims));
+
         if(i >= _nelem) {
           cout << "i = " << i << ", nelem = " << _nelem << endl;
           throw matiocpp_exception("Cell's get out of bounds");
